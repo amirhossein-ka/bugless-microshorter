@@ -88,6 +88,43 @@ anyway, these are rest endpoints this app should have:
 - ~~`/update/{id thingy here}`~~ what you thought i was gonna do this ? huh you wish
 
 
+
+Updates:
+
+in gateway, i should have a job that continuesly checks queue for:
+- every 50 ms, if queue is NOT empty,triger an event to send rpc req and get data
+- everytime something is added to queue, its lenght should be checked. if it reached 100 msgs, it 
+must triger an event to send data
+
+for now, i should focus on the queue itself.
+in Service layer of gw, its is neeeded to have these functions:
+
+1. some user request actual url of some short key
+2. get that key in controller, and give it to service, and wait for results
+3. in service, i can give that key some uuid, to know what result belongs to which request
+4. add uuid-key to queue
+5. now, service is waiting for response
+6. after getting result, give it to controller
+7. done
+
+
+after step 5 above:
+
+1. some job (a function which is running in background) is running
+2. in that function, there is a time.Ticker that ticks every 50ms
+    - only triggers function in step 4 when queue is not empty
+3. in that function, there is a channel that triggered when queue limit is reached.
+4. on tick || or that channel thing, a function is called to get all items from queue, do SINGLE rpc requst,and return actuall url of key that user sent.
+5. maybe, maybe use sync.Map() with uuid as key and `<-chan string` as value for each request that is added to queue
+
+
+
+
+
+
+* side note, what happens if 100th query added in 50th ms ? :D
+
+
 #### Requirements or things i should do
 
 - [ ] sql database
