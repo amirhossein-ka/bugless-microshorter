@@ -107,6 +107,9 @@ in Service layer of gw, its is neeeded to have these functions:
 6. after getting result, give it to controller
 7. done
 
+I just noticed that I need to have a cache system here too, and only add those to queue that I miss
+
+
 
 after step 5 above:
 

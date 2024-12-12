@@ -3,19 +3,29 @@
 // the queue and 50ms wait mechanism, and maybe more stuff !
 package service
 
+import (
+	"ush/internal/config"
+	"ush/internal/gateway/cache"
+)
+
 type (
+
 	// I know using interfaces too much can cause smoll performance problems,
 	// But I just do it because its more future proof, like it will be easier
 	// to change logic behind it.
 	// Also its easier for me to know what should I implement (:
 	Service interface {
-		AddUrl(string) error
+		AddUrl(string) (string, error)
 		GetFullURL(string) (string, error)
 	}
 
 	// SrvImp implements Service
 	// It should contain the queue/wait things, stuff for rpc calls, and ofc some helper methodes to do those stuff
-	SrvImpl struct{}
+	SrvImpl struct {
+		config *config.GatewayConfig
+		cache  cache.LRUCache[string, string]
+    // queue?
+	}
 )
 
 func NewService(...any) Service {
