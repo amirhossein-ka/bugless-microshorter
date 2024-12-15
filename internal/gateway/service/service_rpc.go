@@ -2,7 +2,7 @@ package service
 
 import "ush/internal/rpcm"
 
-func (s *SrvImpl) newUrlRpc(urls []string) ([]string, error) {
+func (s *srvImpl) newUrlRpc(urls []string) ([]string, error) {
 	args := rpcm.Args{Keys: urls}
 	reply := rpcm.Reply{}
 	err := s.rpcClient.Call(rpcm.NewUrl, &args, &reply)
@@ -13,7 +13,7 @@ func (s *SrvImpl) newUrlRpc(urls []string) ([]string, error) {
 	return args.Keys, nil
 }
 
-func (s *SrvImpl) getUrlRpc(keys []string) ([]string, error) {
+func (s *srvImpl) getUrlRpc(keys []string) ([]string, error) {
 	args := rpcm.Args{Keys: keys}
 	reply := rpcm.Reply{}
 	err := s.rpcClient.Call(rpcm.GetUrl, &args, &reply)
