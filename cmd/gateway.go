@@ -6,9 +6,9 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"ush/internal/config"
 	"ush/internal/gateway/controller/http"
 	"ush/internal/gateway/service"
+	"ush/internal/pkg/config"
 
 	"github.com/spf13/cobra"
 )

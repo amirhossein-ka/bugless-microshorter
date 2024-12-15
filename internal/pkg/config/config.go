@@ -6,7 +6,8 @@ import (
 )
 
 type Config struct {
-	GatewayConfig GatewayConfig `json:"gateway"`
+	GatewayConfig   GatewayConfig   `json:"gateway"`
+	ShortenerConfig ShortenerConfig `json:"shortener"`
 }
 
 type GatewayConfig struct {
@@ -14,6 +15,11 @@ type GatewayConfig struct {
 	ShortenerHost string `json:"shortener_host"`
 	ShortenerPort int    `json:"shortener_port"`
 	CacheSize     int    `json:"cache_size"`
+}
+
+type ShortenerConfig struct {
+	ListenPort int    `json:"listen_port"`
+	DBUri      string `json:"db_uri"`
 }
 
 func Parse(cfg *Config, path string) error {
