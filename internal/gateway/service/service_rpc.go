@@ -1,14 +1,25 @@
 package service
 
-func (s *SrvImpl) newUrlRpc(url string) (string, error) {
+import "ush/internal/rpcm"
 
-    return "", nil
+func (s *SrvImpl) newUrlRpc(urls []string) ([]string, error) {
+	args := rpcm.Args{Keys: urls}
+	reply := rpcm.Reply{}
+	err := s.rpcClient.Call(rpcm.NewUrl, &args, &reply)
+	if err != nil {
+		return nil, err
+	}
+
+	return args.Keys, nil
 }
 
-func (s *SrvImpl) getUrlRpc(key string) (string, error) {
-    return "", nil
-}
+func (s *SrvImpl) getUrlRpc(keys []string) ([]string, error) {
+	args := rpcm.Args{Keys: keys}
+	reply := rpcm.Reply{}
+	err := s.rpcClient.Call(rpcm.GetUrl, &args, &reply)
+	if err != nil {
+		return nil, err
+	}
 
-func (s *SrvImpl) getUrlBatch(keys []string) ([]string, error) {
-    return nil, nil
+	return args.Keys, nil
 }
