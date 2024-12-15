@@ -10,9 +10,10 @@ type Config struct {
 }
 
 type GatewayConfig struct {
-	ListenPort     int    `json:"listen_port"`
-	ShortenerHost  string `json:"shortener_host"`
-	ShortenertPort int    `json:"shortener_port"`
+	ListenPort    int    `json:"listen_port"`
+	ShortenerHost string `json:"shortener_host"`
+	ShortenerPort int    `json:"shortener_port"`
+	CacheSize     int    `json:"cache_size"`
 }
 
 func Parse(cfg *Config, path string) error {
