@@ -3,7 +3,12 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 	"ush/internal/config"
+	"ush/internal/gateway/controller/http"
+	"ush/internal/gateway/service"
 
 	"github.com/spf13/cobra"
 )
@@ -38,8 +43,29 @@ func init() {
 
 func startGateway(cfg *config.GatewayConfig) error {
 	// new gateway service
+	srv, err := service.NewService(cfg)
+	if err != nil {
+		return err
+	}
+
 	// new controller with service inside it
+	ctrl := http.New(srv)
+
+	go func() {
+		sig := make(chan os.Signal, 1)
+		signal.Notify(sig, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+
+		<-sig
+
+		if err := ctrl.Stop(); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
 	// start controller to serve http
-	// graceful shutdown
+	if err = ctrl.Start(fmt.Sprintf("0.0.0.0:%d", cfg.ListenPort)); err != nil {
+		return err
+	}
+
 	return nil
 }

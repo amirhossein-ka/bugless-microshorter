@@ -5,7 +5,6 @@ import (
 	"github.com/gorilla/mux"
 	"net/http"
 	"time"
-	"ush/internal/config"
 	"ush/internal/gateway/controller"
 	"ush/internal/gateway/service"
 )
@@ -43,7 +42,7 @@ func (r *rest) Stop() error {
 	return r.server.Shutdown(ctx)
 }
 
-func New(cfg *config.GatewayConfig, s service.Service) controller.Controller {
+func New(s service.Service) controller.Controller {
 	return &rest{
 		handler: &handler{srv: s},
 		router:  mux.NewRouter(),

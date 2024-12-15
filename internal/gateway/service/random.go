@@ -16,7 +16,7 @@ const (
 	randomStringLenght = 6
 )
 
-// copy pasta code from stackoverflow, dont know how exaatcly it works, but it works
+// copy pasta code from stackoverflow, don't know how exactly it works, but it works
 // https://stackoverflow.com/questions/22892120/how-to-generate-a-random-string-of-a-fixed-length-in-go
 func randomString(n int) string {
 	b := make([]byte, n)
