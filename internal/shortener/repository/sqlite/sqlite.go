@@ -78,7 +78,7 @@ func (r *repo) Stop(ctx context.Context) error {
 }
 
 func New(cfg *config.ShortenerConfig) (repository.Repository, error) {
-	db, err := sql.Open("sqlite", cfg.DSN)
+	db, err := sql.Open("sqlite3", cfg.DSN)
 	if err != nil {
 		return nil, err
 	}
@@ -90,14 +90,13 @@ func New(cfg *config.ShortenerConfig) (repository.Repository, error) {
 		statements: &statements{},
 	}
 
-	// prepare sql queries
-	if err = r.statements.initialize(db); err != nil {
-		return nil, err
-	}
-
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
 	defer cancel()
 	if err := r.createTables(ctx); err != nil {
+		return nil, err
+	}
+	// prepare sql queries
+	if err = r.statements.initialize(db); err != nil {
 		return nil, err
 	}
 
