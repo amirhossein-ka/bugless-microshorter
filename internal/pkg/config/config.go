@@ -18,13 +18,8 @@ type GatewayConfig struct {
 }
 
 type ShortenerConfig struct {
-	ListenPort int `json:"listen_port"`
-
-	DBHost     string `json:"db_host"`
-	DBPort     int    `json:"db_port"`
-	DBUser     string `json:"db_user"`
-	DBPassword string `json:"db_password"`
-	DBName     string `json:"db_name"`
+	ListenPort int    `json:"listen_port"`
+	DSN        string `json:"dsn"`
 }
 
 func Parse(cfg *Config, path string) error {

@@ -4,10 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/go-sql-driver/mysql"
 	"time"
 	"ush/internal/pkg/config"
 	"ush/internal/shortener/repository"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type repo struct {
@@ -77,16 +78,7 @@ func (r *repo) Stop(ctx context.Context) error {
 }
 
 func New(cfg *config.ShortenerConfig) (repository.Repository, error) {
-	m := mysql.Config{
-		User:   cfg.DBUser,
-		Passwd: cfg.DBPassword,
-		Net:    "tcp",
-		Addr:   fmt.Sprintf("%s:%d", cfg.DBHost, cfg.DBPort),
-		DBName: cfg.DBName,
-	}
-	dsn := m.FormatDSN()
-
-	db, err := sql.Open(dsn, dsn)
+	db, err := sql.Open("sqlite", cfg.DSN)
 	if err != nil {
 		return nil, err
 	}

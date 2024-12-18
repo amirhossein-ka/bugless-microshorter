@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/go-sql-driver/mysql"
+	_ "github.com/go-sql-driver/mysql"
 	"time"
 	"ush/internal/pkg/config"
 	"ush/internal/shortener/repository"
@@ -69,16 +69,7 @@ func (s *statements) initialize(db *sql.DB) error {
 }
 
 func New(cfg *config.ShortenerConfig) (repository.Repository, error) {
-	m := mysql.Config{
-		User:   cfg.DBUser,
-		Passwd: cfg.DBPassword,
-		Net:    "tcp",
-		Addr:   fmt.Sprintf("%s:%d", cfg.DBHost, cfg.DBPort),
-		DBName: cfg.DBName,
-	}
-	dsn := m.FormatDSN()
-
-	db, err := sql.Open(dsn, dsn)
+	db, err := sql.Open("mysql", cfg.DSN)
 	if err != nil {
 		return nil, err
 	}
