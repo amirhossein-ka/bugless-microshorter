@@ -57,32 +57,50 @@ func (r *Shortener) GetUrl(args *rpcm.Args, reply *rpcm.Reply) error {
 }
 
 func (r *Shortener) Start(s string) error {
-
 	listener, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%d", r.cfg.ListenPort))
 	if err != nil {
 		return err
 	}
 
+	r.l = listener
+
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
-			log.Println(err)
+			if errors.Is(err, net.ErrClosed) {
+				log.Println("Listener closed, stopping accept loop")
+				break
+			}
+			log.Println("Accept error:", err)
 			continue
 		}
 
 		go r.server.ServeConn(conn)
 	}
+
+	return nil
 }
 
 func (r *Shortener) Stop() error {
-	if err := r.shortenerService.Stop(); err != nil {
-		return nil
+	var err error
+
+	if r.shortenerService != nil {
+		if serr := r.shortenerService.Stop(); serr != nil {
+			err = fmt.Errorf("failed to stop shortener service: %w", serr)
+		}
 	}
 
-	if err := r.l.Close(); err != nil {
-		return err
+	if r.l != nil {
+		if cerr := r.l.Close(); cerr != nil {
+			if err != nil {
+				err = fmt.Errorf("%s; failed to close listener: %w", err, cerr)
+			} else {
+				err = fmt.Errorf("failed to close listener: %w", cerr)
+			}
+		}
 	}
-	return nil
+
+	return err
 }
 
 func New(config *config.ShortenerConfig, srv service.ShortenerService) (controller.RPC, error) {
