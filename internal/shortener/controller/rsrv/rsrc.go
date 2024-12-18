@@ -2,6 +2,7 @@
 package rsrv
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"net"
@@ -9,24 +10,50 @@ import (
 	"ush/internal/pkg/config"
 	"ush/internal/rpcm"
 	"ush/internal/shortener/controller"
-	"ush/internal/shortener/repository"
+	"ush/internal/shortener/service"
 )
 
 type Shortener struct {
-	repo repository.Repository
-	srv  *rpc.Server
-	cfg  *config.ShortenerConfig
-	l    net.Listener
+	shortenerService service.ShortenerService
+	server           *rpc.Server
+	cfg              *config.ShortenerConfig
+	l                net.Listener
 }
 
 func (r *Shortener) NewUrl(args *rpcm.Args, reply *rpcm.Reply) error {
-	//TODO implement me
-	panic("implement me")
+	if len(args.Keys) == 0 {
+		return errors.New("what you wanna put in")
+	}
+	if len(args.Keys) > 1 {
+		return errors.New("you can only add one url per request pls wait for more updates")
+	}
+
+	key, err := r.shortenerService.AddUrl(args.Keys[0])
+	if err != nil {
+		return err
+	}
+
+	reply.Results = append(reply.Results, key)
+
+	return nil
 }
 
 func (r *Shortener) GetUrl(args *rpcm.Args, reply *rpcm.Reply) error {
-	//TODO implement me
-	panic("implement me")
+	if len(args.Keys) == 0 {
+		return errors.New("what you looking for dude")
+	}
+	if len(args.Keys) > 1 {
+		return errors.New("you can only add one url per request pls wait for more updates")
+	}
+
+	url, err := r.shortenerService.GetUrl(args.Keys[0])
+	if err != nil {
+		return err
+	}
+
+	reply.Results = append(reply.Results, url)
+
+	return nil
 }
 
 func (r *Shortener) Start(s string) error {
@@ -43,17 +70,23 @@ func (r *Shortener) Start(s string) error {
 			continue
 		}
 
-		go r.srv.ServeConn(conn)
+		go r.server.ServeConn(conn)
 	}
 }
 
 func (r *Shortener) Stop() error {
-	//TODO implement me
-	panic("implement me")
+	if err := r.shortenerService.Stop(); err != nil {
+		return nil
+	}
+
+	if err := r.l.Close(); err != nil {
+		return err
+	}
+	return nil
 }
 
-func New(config *config.ShortenerConfig, repo repository.Repository) (controller.RPC, error) {
-	// check that
+func New(config *config.ShortenerConfig, srv service.ShortenerService) (controller.RPC, error) {
+	// check that what i wrote implements the thing in rpcm package
 	var _ rpcm.ShortenerService = (*Shortener)(nil)
 
 	sh := new(Shortener)
@@ -63,9 +96,9 @@ func New(config *config.ShortenerConfig, repo repository.Repository) (controller
 		return nil, err
 	}
 
-	sh.srv = s
+	sh.server = s
 	sh.cfg = config
-	sh.repo = repo
+	sh.shortenerService = srv
 
 	return sh, nil
 }
