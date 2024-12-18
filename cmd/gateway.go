@@ -29,19 +29,14 @@ var gatewayCmd = &cobra.Command{
 	},
 }
 
-var configPath *string
-var cfg = config.Config{}
-
 func init() {
 	rootCmd.AddCommand(gatewayCmd)
-
-	configPath = gatewayCmd.Flags().StringP("config", "c", "config.json", "configuration file pass")
-	if err := config.Parse(&cfg, *configPath); err != nil {
-		log.Fatal(err)
-	}
 }
 
 func startGateway(cfg *config.GatewayConfig) error {
+  if cfg== nil {
+    panic("config struct is nil")
+  }
 	// new gateway service
 	srv, err := service.NewService(cfg)
 	if err != nil {

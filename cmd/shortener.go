@@ -1,10 +1,15 @@
-/*
-Copyright © 2024 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
+	"ush/internal/pkg/config"
+	"ush/internal/shortener/controller/rsrv"
+	"ush/internal/shortener/repository/sqlite"
+	"ush/internal/shortener/service"
 
 	"github.com/spf13/cobra"
 )
@@ -20,20 +25,49 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("shortener called")
+    fmt.Println(configPath)
+    if err := startShortener(&cfg.ShortenerConfig); err != nil {
+      panic(err)
+    }
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(shortenerCmd)
+}
 
-	// Here you will define your flags and configuration settings.
+func startShortener(cfg *config.ShortenerConfig) error {
+	if cfg == nil {
+		panic("config struct is nil")
+	}
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// shortenerCmd.PersistentFlags().String("foo", "", "A help for foo")
+	repo, err := sqlite.New(cfg)
+	if err != nil {
+		return err
+	}
 
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// shortenerCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	service := service.New(repo)
+
+	ctrl, err := rsrv.New(cfg, service)
+	if err != nil {
+		return err
+	}
+
+	go func() {
+		sig := make(chan os.Signal, 1)
+		signal.Notify(sig, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+
+		<-sig
+
+		if err := ctrl.Stop(); err != nil {
+			log.Fatal(err)
+		}
+
+	}()
+
+	if err = ctrl.Start(fmt.Sprintf("0.0.0.0:%d", cfg.ListenPort)); err != nil {
+		return err
+	}
+
+	return nil
 }
