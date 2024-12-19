@@ -6,7 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"ush/internal/pkg/config"
+	"ush/pkg/config"
 	"ush/internal/shortener/controller/rsrv"
 	"ush/internal/shortener/repository/sqlite"
 	"ush/internal/shortener/service"

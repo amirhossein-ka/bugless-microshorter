@@ -8,7 +8,7 @@ import (
 	"syscall"
 	"ush/internal/gateway/controller/http"
 	"ush/internal/gateway/service"
-	"ush/internal/pkg/config"
+	"ush/pkg/config"
 
 	"github.com/spf13/cobra"
 )

@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"ush/internal/pkg/config"
+	"ush/pkg/config"
 
 	"github.com/spf13/cobra"
 )

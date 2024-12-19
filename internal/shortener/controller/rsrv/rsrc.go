@@ -7,7 +7,7 @@ import (
 	"log"
 	"net"
 	"net/rpc"
-	"ush/internal/pkg/config"
+	"ush/pkg/config"
 	"ush/internal/rpcm"
 	"ush/internal/shortener/controller"
 	"ush/internal/shortener/service"

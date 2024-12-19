@@ -6,7 +6,7 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"time"
-	"ush/internal/pkg/config"
+	"ush/pkg/config"
 	"ush/internal/shortener/repository"
 )
 

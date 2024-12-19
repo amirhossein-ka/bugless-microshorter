@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"time"
-	"ush/internal/pkg/config"
+	"ush/pkg/config"
 	"ush/internal/shortener/repository"
 
 	_ "github.com/mattn/go-sqlite3"

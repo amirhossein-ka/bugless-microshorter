@@ -6,8 +6,8 @@ package service
 import (
 	"fmt"
 	"net/rpc"
-	"ush/internal/pkg/cache"
-	"ush/internal/pkg/config"
+	"ush/pkg/cache"
+	"ush/pkg/config"
 )
 
 type (
